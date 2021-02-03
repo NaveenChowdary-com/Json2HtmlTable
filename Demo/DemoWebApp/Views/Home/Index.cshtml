@@ -7,11 +7,17 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title></title>
 </head>
 <body>
     <div>
-    
+        <form method="post">
+            <textarea name="txtArea" style="width:700px;height:300px">@ViewBag.JsonText</textarea>
+            <br />
+            <input type="submit" value="Convert" />
+        </form>
+    </div>
+    <div>
+        @Html.Raw(ViewBag.HtmlString)
     </div>
 </body>
 </html>
