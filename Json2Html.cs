@@ -9,7 +9,7 @@ namespace Json2HtmlTable
     public class Json2Html
     {
         private readonly string border = "";
-        public Json2Html(bool IsWithTableBorder = false,string css = null)
+        public Json2Html(bool IsWithTableBorder = false, string css = null)
         {
             if (IsWithTableBorder)
                 border = " border=1";
@@ -26,8 +26,33 @@ namespace Json2HtmlTable
         {
             try
             {
-                JObject jObject = JsonConvert.DeserializeObject<JObject>(json);
-                html += "<table"+ border + "><tbody>";
+                var dynamicJson = JsonConvert.DeserializeObject<dynamic>(json);
+
+                if (dynamicJson.GetType() == typeof(JArray))
+                {
+                    JArray jArray = (JArray)dynamicJson;
+                    foreach (JToken jItem in jArray)
+                    {
+                        GetObjectJson2Html(jItem.ToObject<JObject>());
+                        html += "<br />";
+                    }
+                }
+                else if (dynamicJson.GetType() == typeof(JObject))
+                {
+                    GetObjectJson2Html((JObject)dynamicJson);
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return html;
+        }
+
+        private string GetObjectJson2Html(JObject jObject)
+        {
+            try
+            {
+                html += "<table" + border + "><tbody>";
                 foreach (JProperty jProperty in jObject.Properties())
                 {
                     html += "<tr><td><b>" + jProperty.Name + "</b></td><td>";
@@ -37,7 +62,7 @@ namespace Json2HtmlTable
                             GetArrayJson2Html(jToken);
                         else if (jToken.Type == JTokenType.Object)
                         {
-                            html += "<table"+ border + "><thead><tr>";
+                            html += "<table" + border + "><thead><tr>";
                             JObject jObj = jToken as JObject;
                             List<string> jObjProList = jObj.Properties().Select(x => x.Name).ToList();
                             foreach (string strProperty in jObjProList) html += "<th>" + strProperty + "</th>";
@@ -52,7 +77,7 @@ namespace Json2HtmlTable
                                 else if (jProp.Value.Type == JTokenType.Object)
                                 {
                                     html += "<td>";
-                                    html = GetJson2Html(jProp.Value.ToString()) + "</td>";
+                                    html = GetObjectJson2Html((JObject)jProp.Value) + "</td>";
                                 }
                                 else
                                     html += "<td>" + jProp.Value + "</td>";
@@ -76,7 +101,7 @@ namespace Json2HtmlTable
         {
             try
             {
-                html += "<table"+ border + "><tbody><tr>";
+                html += "<table" + border + "><tbody><tr>";
                 JToken _jToken = jToken.First;
                 if (_jToken != null) foreach (JProperty jProperty in _jToken) html += "<th>" + jProperty.Name + "</th>";
                 html += "</tr></thead><tbody>";
@@ -95,7 +120,7 @@ namespace Json2HtmlTable
                             else if (jProperty.Value.Type == JTokenType.Object)
                             {
                                 html += "<td>";
-                                html = GetJson2Html(jProperty.Value.ToString()) + "</td>";
+                                html = GetObjectJson2Html((JObject)jProperty.Value) + "</td>";
                             }
                             else
                                 html += "<td>" + jProperty.Value + "</td>";
