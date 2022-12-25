@@ -1,15 +1,13 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Linq;
 using System.Text;
 
-namespace Json2HtmlTable
+namespace Json2HtmlTable_Core
 {
     public class Json2Html
     {
         private readonly string border = "";
-        public Json2Html(bool IsWithTableBorder = false, string css = null)
+        public Json2Html(bool IsWithTableBorder = false, string? css = null)
         {
             if (IsWithTableBorder)
                 border = " border=1";
@@ -26,7 +24,7 @@ namespace Json2HtmlTable
         {
             try
             {
-                object dynamicJson = JsonConvert.DeserializeObject<object>(json);
+                object? dynamicJson = JsonConvert.DeserializeObject<object>(json);
 
                 if (dynamicJson?.GetType() == typeof(JArray))
                 {
